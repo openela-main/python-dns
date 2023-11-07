@@ -1,0 +1,34 @@
+From 8c23aaa4a213624cce86caa2e452ad19123d36f4 Mon Sep 17 00:00:00 2001
+From: Rafael Guterres Jeffman <rjeffman@redhat.com>
+Date: Wed, 14 Jun 2023 15:24:02 -0300
+Subject: [PATCH 3/4] Do not use setuptools_scm[toml] for build.
+
+---
+ setup.cfg | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/setup.cfg b/setup.cfg
+index af48e0e..e9bec34 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -4,7 +4,7 @@ version = 2.3.0
+ author = Bob Halley
+ author_email = halley@dnspython.org
+ license = ISC
+-license_file = LICENSE
++license_files = LICENSE
+ description = DNS toolkit
+ url = https://www.dnspython.org
+ project_urls =
+@@ -46,7 +46,7 @@ packages =
+     dns.rdtypes.CH
+ python_requires = >=3.7
+ test_suite = tests
+-setup_requires = setuptools>=44; setuptools_scm[toml]>=3.4.3
++setup_requires = setuptools>=44
+ 
+ [options.extras_require]
+ DOH = httpx>=0.21.1; h2>=4.1.0; requests; requests-toolbelt
+-- 
+2.40.1
+
