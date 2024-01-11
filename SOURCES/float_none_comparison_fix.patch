@@ -1,0 +1,14 @@
+diff --git a/dns/query.py b/dns/query.py
+index bfecd43..19b9fbb 100644
+--- a/dns/query.py
++++ b/dns/query.py
+@@ -467,7 +467,8 @@ def xfr(where, zone, rdtype=dns.rdatatype.AXFR, rdclass=dns.rdataclass.IN,
+     first = True
+     while not done:
+         mexpiration = _compute_expiration(timeout)
+-        if mexpiration is None or mexpiration > expiration:
++        if mexpiration is None or \
++           (expiration is not None and mexpiration > expiration):
+             mexpiration = expiration
+         if use_udp:
+             _wait_for_readable(s, expiration)
