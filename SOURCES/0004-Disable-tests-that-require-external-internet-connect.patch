@@ -1,0 +1,26 @@
+From d8fea6c4e5512fd830c48035035ff3ea16b06444 Mon Sep 17 00:00:00 2001
+From: Rafael Guterres Jeffman <rjeffman@redhat.com>
+Date: Wed, 14 Jun 2023 17:06:47 -0300
+Subject: [PATCH 4/4] Disable tests that require external internet connection
+
+---
+ tests/util.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tests/util.py b/tests/util.py
+index 5518b41..87ede4c 100644
+--- a/tests/util.py
++++ b/tests/util.py
+@@ -27,7 +27,8 @@ import dns.rdataclass
+ import dns.rdatatype
+ 
+ # Cache for is_internet_reachable()
+-_internet_reachable = None
++# RHEL 9 build environment does not have provide external network access.
++_internet_reachable = False
+ _have_ipv4 = False
+ _have_ipv6 = False
+ 
+-- 
+2.40.1
+

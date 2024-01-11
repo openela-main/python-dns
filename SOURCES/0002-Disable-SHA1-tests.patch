@@ -1,0 +1,112 @@
+From ecf2b229bd23229928599751950eda1639cd7e05 Mon Sep 17 00:00:00 2001
+From: Rafael Guterres Jeffman <rjeffman@redhat.com>
+Date: Wed, 14 Jun 2023 15:17:57 -0300
+Subject: [PATCH 2/4] Disable SHA1 tests.
+
+Disable SHA1 dependent tests, as SHA1 is not available on c9s/RHEL 9.
+---
+ tests/test_dnssec.py | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/tests/test_dnssec.py b/tests/test_dnssec.py
+index 098af69..920c955 100644
+--- a/tests/test_dnssec.py
++++ b/tests/test_dnssec.py
+@@ -603,25 +603,30 @@ class DNSSECValidatorTestCase(unittest.TestCase):
+         self.assertEqual(dns.dnssec.key_id(rsamd5_keys[abs_example][0]), 30239)
+         self.assertEqual(dns.dnssec.key_id(rsamd5_keys[abs_example][1]), 62992)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testAbsoluteRSAGood(self):  # type: () -> None
+         dns.dnssec.validate(abs_soa, abs_soa_rrsig, abs_keys, None, when)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testDuplicateKeytag(self):  # type: () -> None
+         dns.dnssec.validate(
+             abs_soa, abs_soa_rrsig, abs_keys_duplicate_keytag, None, when
+         )
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testAbsoluteRSABad(self):  # type: () -> None
+         def bad():  # type: () -> None
+             dns.dnssec.validate(abs_other_soa, abs_soa_rrsig, abs_keys, None, when)
+ 
+         self.assertRaises(dns.dnssec.ValidationFailure, bad)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testRelativeRSAGood(self):  # type: () -> None
+         dns.dnssec.validate(rel_soa, rel_soa_rrsig, rel_keys, abs_dnspython_org, when)
+         # test the text conversion for origin too
+         dns.dnssec.validate(rel_soa, rel_soa_rrsig, rel_keys, "dnspython.org", when)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testRelativeRSABad(self):  # type: () -> None
+         def bad():  # type: () -> None
+             dns.dnssec.validate(
+@@ -630,6 +635,7 @@ class DNSSECValidatorTestCase(unittest.TestCase):
+ 
+         self.assertRaises(dns.dnssec.ValidationFailure, bad)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testAbsoluteDSAGood(self):  # type: () -> None
+         dns.dnssec.validate(
+             abs_dsa_soa,
+@@ -742,6 +748,7 @@ class DNSSECValidatorTestCase(unittest.TestCase):
+             rsasha512_ns, rsasha512_ns_rrsig, rsasha512_keys, None, rsasha512_when
+         )
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testWildcardGoodAndBad(self):
+         dns.dnssec.validate(
+             wildcard_txt, wildcard_txt_rrsig, wildcard_keys, None, wildcard_when
+@@ -768,6 +775,7 @@ class DNSSECValidatorTestCase(unittest.TestCase):
+                 com_txt, com_txt_rrsig[0], wildcard_keys, None, wildcard_when
+             )
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testAlternateParameterFormats(self):  # type: () -> None
+         # Pass rrset and rrsigset as (name, rdataset) tuples, not rrsets
+         rrset = (abs_soa.name, abs_soa.to_rdataset())
+@@ -882,6 +890,7 @@ class DNSSECMiscTestCase(unittest.TestCase):
+ 
+ 
+ class DNSSECMakeDSTestCase(unittest.TestCase):
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testMnemonicParser(self):
+         good_ds_mnemonic = dns.rdata.from_text(
+             dns.rdataclass.IN,
+@@ -891,6 +900,7 @@ class DNSSECMakeDSTestCase(unittest.TestCase):
+         )
+         self.assertEqual(good_ds, good_ds_mnemonic)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testMakeExampleSHA1DS(self):  # type: () -> None
+         algorithm: Any
+         for algorithm in ("SHA1", "sha1", dns.dnssec.DSDigest.SHA1):
+@@ -909,6 +919,7 @@ class DNSSECMakeDSTestCase(unittest.TestCase):
+             )
+             self.assertEqual(ds, example_ds_sha1)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testMakeExampleSHA1DSValidationOkByPolicy(self):  # type: () -> None
+         algorithm: Any
+         for algorithm in ("SHA1", "sha1", dns.dnssec.DSDigest.SHA1):
+@@ -924,6 +935,7 @@ class DNSSECMakeDSTestCase(unittest.TestCase):
+             )
+             self.assertEqual(ds, example_ds_sha1)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testMakeExampleSHA1DSDeniedByPolicy(self):  # type: () -> None
+         with self.assertRaises(dns.dnssec.DeniedByPolicy):
+             ds = dns.dnssec.make_ds(abs_example, example_sep_key, "SHA1")
+@@ -1174,6 +1186,7 @@ class DNSSECSignatureTestCase(unittest.TestCase):
+         rrsig_template = abs_soa_rrsig[0]
+         data = dns.dnssec._make_rrsig_signature_data(abs_soa, rrsig_template)
+ 
++    @unittest.skip(reason="SHA1 is not supported.")
+     def testSignatureRSASHA1(self):  # type: () -> None
+         key = rsa.generate_private_key(
+             public_exponent=65537, key_size=2048, backend=default_backend()
+-- 
+2.40.1
+

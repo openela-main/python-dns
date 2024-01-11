@@ -13,18 +13,20 @@
 %endif
 
 Name:           python-%{py_package_name}
-Version:        2.2.1
+Version:        2.3.0
 Release:        2%{?dist}
 Summary:        DNS toolkit for Python
 
 # The entire package is licensed with both licenses, see LICENSE file
-License:        ISC and MIT
+License:        ISC
 URL:            http://www.dnspython.org
 
 Source0:        https://github.com/rthalley/%{pypi_name}/archive/v%{version}%{rctag}/%{pypi_name}-%{version}%{rctag}.tar.gz
-Patch0:         0001-Skip-tests-that-require-external-network-connection_rhbz#1914296.patch
-Patch1:         0002-Do-not-build-with-setuptools-scm_rhbz#2088661.patch
-Patch2:         0003-Skip-DNSSEC-tests-with-SHA1_rhbz#2107651.patch
+Patch0:         0001-Add-missing-quic-files-to-setup.py-cythonize-887.patch
+Patch1:         0002-Disable-SHA1-tests.patch
+Patch2:         0003-Do-not-use-setuptools_scm-toml-for-build.patch
+Patch3:         0004-Disable-tests-that-require-external-internet-connect.patch
+Patch4:         0005-Add-dns.quic-to-setup.cfg-for-legacy-setup.py-install.patch
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
@@ -113,6 +115,14 @@ pytest -k "not testCanonicalNameDangling"
 }
 
 %changelog
+* Mon May 26 2023 Rafael Jeffman <rjeffman@redhat.com> - 2.3.0-2
+- Fix build for legacy setup.py
+  Related: rhbz#2177854
+
+* Wed May 17 2023 Rafael Jeffman <rjeffman@redhat.com> - 2.3.0-1
+- Rebase to version 2.3.0
+  Resolves: rhbz#2177854
+
 * Sat Jan 07 2023 Rafael Jeffman <rjeffman@redhat.com> - 2.2.1-2
 - Remove pycache from patch 0003.
   Related: rhbz#2107651
