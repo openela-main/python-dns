@@ -1,6 +1,6 @@
 Name:           python-dns
 Version:        1.15.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        DNS toolkit for Python
 
 License:        MIT
@@ -17,6 +17,12 @@ Patch1:         fix_unicode_label_escaping.patch
 # Fixes https://bugzilla.redhat.com/show_bug.cgi?id=2075187
 # Backported from upstream: https://github.com/rthalley/dnspython/commit/9fbf9b223dc26262b1cf23f623f89283ee9c8375
 Patch2:         float_none_comparison_fix.patch
+
+# Fix for CVE-2023-29483
+# Upstream fix:
+#   https://github.com/rthalley/dnspython/commit/f66e25b5f549acf66d1fb6ead13eb3cff7d09af3
+# Backported to completely different codebase hence not very similar to upstream fix.
+Patch3:         CVE-2023-29483.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -75,6 +81,10 @@ find examples -type f | xargs chmod a-x
 
 
 %changelog
+* Mon Apr 22 2024 Lumír Balhar <lbalhar@redhat.com> - 1.15.0-12
+- Security fix for CVE-2023-29483
+Resolves: RHEL-32630
+
 * Thu Apr 21 2022 Charalampos Stratakis <cstratak@redhat.com> - 1.15.0-11
 - Fix comparison between float and None types
 Resolves: rhbz#2075187
