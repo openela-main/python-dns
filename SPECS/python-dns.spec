@@ -4,29 +4,24 @@
 
 %if 0%{?rhel}
 %bcond_with trio
-%bcond_with curio
 %bcond_with doh
 %else
 %bcond_without trio
-%bcond_without curio
 %bcond_without doh
 %endif
 
-Name:           python-%{py_package_name}
-Version:        2.3.0
-Release:        2%{?dist}
+Name:           python-dns
+Version:        2.6.1
+Release:        3%{?dist}
 Summary:        DNS toolkit for Python
 
 # The entire package is licensed with both licenses, see LICENSE file
 License:        ISC
-URL:            http://www.dnspython.org
+URL:            https://www.dnspython.org
 
 Source0:        https://github.com/rthalley/%{pypi_name}/archive/v%{version}%{rctag}/%{pypi_name}-%{version}%{rctag}.tar.gz
-Patch0:         0001-Add-missing-quic-files-to-setup.py-cythonize-887.patch
-Patch1:         0002-Disable-SHA1-tests.patch
-Patch2:         0003-Do-not-use-setuptools_scm-toml-for-build.patch
-Patch3:         0004-Disable-tests-that-require-external-internet-connect.patch
-Patch4:         0005-Add-dns.quic-to-setup.cfg-for-legacy-setup.py-install.patch
+Patch1000:      1000-use-setuptools-to-build-dnspython.patch
+Patch1001:      1001-disable-tests-due-to-etc-resolv-conf.patch
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
@@ -34,11 +29,6 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-cryptography
 %if %{with trio}
 BuildRequires:  python3-trio
-%endif
-%if %{with curio}
-BuildRequires:  python3-curio
-%endif
-%if %{with trio} || %{with curio}
 BuildRequires:  python3-sniffio
 %endif
 %if %{with doh}
@@ -70,6 +60,9 @@ Summary:        %{summary}
 %prep
 %autosetup -p1 -n %{pypi_name}-%{version}%{rctag}
 
+# Fix package version.
+sed -i -e "s/@VERSION@/%{version}/" setup.py
+
 # strip exec permissions so that we don't pick up dependencies from docs
 find examples -type f | xargs chmod a-x
 
@@ -80,42 +73,41 @@ find examples -type f | xargs chmod a-x
 %py3_install
 
 %check
-# testCanonicalNameDangling is failing with
-#    AssertionError: <DNS name dangling-cname.dnspython.org.> != <DNS name dangling-target.dnspython.org.>
-pytest -k "not testCanonicalNameDangling"
+export OPENSSL_ENABLE_SHA1_SIGNATURES=yes
+pytest
 
 %files -n python3-%{py_package_name}
 %license LICENSE
 %doc README.md examples
-%{?python_extras_subpkg:
 %pycached %exclude %{python3_sitelib}/dns/_trio_backend.py
-%pycached %exclude %{python3_sitelib}/dns/_curio_backend.py
-}
 %{python3_sitelib}/%{py_package_name}
 %{python3_sitelib}/%{pypi_name}-*.egg-info
 
-%{?python_extras_subpkg:
-%python_extras_subpkg -n python3-dns -i %{python3_sitelib}/*.egg-info dnssec idna
+%python_extras_subpkg -n python3-dns -i %{python3_sitelib}/dns/__init__.py dnssec idna
 
 %if %{with doh}
-%python_extras_subpkg -n python3-dns -i %{python3_sitelib}/*.egg-info doh
+%python_extras_subpkg -n python3-dns -i %{python3_sitelib}/dns/__init__.py doh
 %endif
 
 %if %{with trio}
-%python_extras_subpkg -n python3-dns -i %{python3_sitelib}/*.egg-info trio
+%python_extras_subpkg -n python3-dns -i %{python3_sitelib}/dns/__init__.py trio
 %pycached %{python3_sitelib}/dns/_trio_backend.py
 %endif
 
-%if %{with curio}
-%python_extras_subpkg -n python3-dns -i %{python3_sitelib}/*.egg-info curio
-%pycached %{python3_sitelib}/dns/_curio_backend.py
-%endif
-
-# end of python_extras_subpkg
-}
-
 %changelog
-* Mon May 26 2023 Rafael Jeffman <rjeffman@redhat.com> - 2.3.0-2
+* Tue Aug 20 2024 Rafael Jeffman <rjeffman@redhat.com> - 2.6.1-3
+- Ensure dns.rdtypes subpackages are available
+  Related: RHEL-32663
+
+* Mon Aug 19 2024 Rafael Jeffman <rjeffman@redhat.com> - 2.6.1-2
+- Add missing files due to build change from hatchling to setuptools
+  Related: RHEL-32663
+
+* Fri Aug 16 2024 Rafael Jeffman <rjeffman@redhat.com> - 2.6.1-1
+- Rebase to 2.6.1
+  Resolves: RHEL-32628, RHEL-32663
+
+* Mon Jun 26 2023 Rafael Jeffman <rjeffman@redhat.com> - 2.3.0-2
 - Fix build for legacy setup.py
   Related: rhbz#2177854
 
