@@ -1,6 +1,6 @@
 Name:           python-dns
 Version:        1.15.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        DNS toolkit for Python
 
 License:        MIT
@@ -23,6 +23,11 @@ Patch2:         float_none_comparison_fix.patch
 #   https://github.com/rthalley/dnspython/commit/f66e25b5f549acf66d1fb6ead13eb3cff7d09af3
 # Backported to completely different codebase hence not very similar to upstream fix.
 Patch3:         CVE-2023-29483.patch
+
+# Fix for CVE-2026-114605
+# Upstream fix:
+#   https://github.com/rthalley/dnspython/commit/b485e460c266540a1a09ca6d8d1d7b685b1d3023
+Patch4:         CVE-2026-114605.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -81,6 +86,11 @@ find examples -type f | xargs chmod a-x
 
 
 %changelog
+* Thu Oct 22 2026 RHEL Packaging Agent <redhat-ymir-agent@redhat.com> - 1.15.0-13
+- CVE-2026-114605 python-dns: dnspython: Denial of Service via excessive
+  DNS compression pointer traversal
+Resolves: RHEL-290592
+
 * Mon Apr 22 2024 Lumír Balhar <lbalhar@redhat.com> - 1.15.0-12
 - Security fix for CVE-2023-29483
 Resolves: RHEL-32630
